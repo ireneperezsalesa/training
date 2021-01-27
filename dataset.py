@@ -43,14 +43,15 @@ class EventData(Dataset):
         frame_tensor = torch.tensor(numpy.transpose(frame, (2,0,1)))
         frame_tensor = frame_tensor.type(torch.FloatTensor)
 
-        padx = torch.randn((5,2,240))
-        pady = torch.randn((3,2,240))
+        # Normalize event tensor to mean=0, std=1
+        mean = torch.mean(event_tensor)
+        std = torch.std(event_tensor)
+        event_tensor = (event_tensor - mean)/std
+
+        # Padding
+        padx = torch.zeros((5,2,240))
+        pady = torch.zeros((3,2,240))
         event_t = torch.cat((padx, event_tensor, padx), 1)
         frame_t = torch.cat((pady, frame_tensor, pady), 1)
-
-        # Normalize event tensor to mean=0, std=1
-        mean = torch.mean(event_t)
-        std = torch.std(event_t)
-        event_t = (event_t - mean)/std
 
         return (event_t, frame_t)
